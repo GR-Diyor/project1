@@ -6,6 +6,7 @@ import '../data/wedding_models.dart';
 import '../ui/theme.dart';
 import '../ui/widgets.dart';
 import '../util/format_util.dart';
+import 'inner_pages/chef_page.dart';
 
 class ServicesPage extends ConsumerStatefulWidget {
   const ServicesPage();
@@ -16,7 +17,14 @@ class ServicesPage extends ConsumerStatefulWidget {
 
 class _ServicesPageState extends ConsumerState<ServicesPage> {
   static const _categories = [
-    "To'yxona", 'Artist', 'Foto/Video', 'Boshlovchi', 'Dekor', 'Transport', 'Libos', 'Make-up',
+    "To'yxona",
+    'Artist',
+    'Foto/Video',
+    'Boshlovchi',
+    'Dekor',
+    'Transport',
+    'Libos',
+    'Make-up',
   ];
   static const _filters = ['Barchasi', ..._categories];
 
@@ -39,70 +47,146 @@ class _ServicesPageState extends ConsumerState<ServicesPage> {
     final store = ref.watch(dataStoreProvider.notifier);
     final d = ref.watch(dataStoreProvider);
 
-    final filtered = d.services.where((s) => filter == 'Barchasi' || s.category == filter).toList();
+    final filtered = d.services
+        .where((s) => filter == 'Barchasi' || s.category == filter)
+        .toList();
 
-    return ListView(
-      children: [
-        Row(
-          children: [
-            Expanded(child: _summary('JAMI XIZMATLAR', '${d.services.length}', AppTheme.green)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _summary('BAND QILINGAN', '${store.servicesByStatus('Band qilingan')}', AppTheme.gold),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        _summary('UMUMIY NARX', FormatUtil.money(store.servicesTotalPrice()), Colors.white),
-        const SizedBox(height: 16),
-        AppCard(
-          child: Column(
-            children: [
-              AppTextInput(controller: name, placeholder: 'Xizmat nomi'),
-              const SizedBox(height: 10),
-              AppSelectBox(
-                options: _categories,
-                selected: category,
-                onChanged: (v) => setState(() => category = v),
-              ),
-              const SizedBox(height: 10),
-              AppTextInput(controller: phone, placeholder: 'Telefon'),
-              const SizedBox(height: 10),
-              AppTextInput(
-                controller: price,
-                placeholder: 'Narx',
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 10),
-              AppButton(
-                text: "+ Qo'shish",
-                normalColor: AppTheme.green,
-                hoverColor: AppTheme.dark2,
-                textColor: Colors.white,
-                width: double.infinity,
-                onPressed: () {
-                  store.addService(name.text, category, phone.text, FormatUtil.parseMoney(price.text));
-                  name.clear();
-                  phone.clear();
-                  price.clear();
-                },
-              ),
-            ],
+    return DefaultTabController(
+      length: 5,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          SizedBox(
+            height: 10,
           ),
-        ),
-        const SizedBox(height: 16),
-        AppSelectBox(
-          options: _filters,
-          selected: filter,
-          onChanged: (v) => setState(() => filter = v),
-        ),
-        const SizedBox(height: 12),
-        for (final s in filtered) ...[
-          _serviceCard(s),
-          const SizedBox(height: 10),
+          Text(
+            "Kategoriyani tanlang",
+            style: TextStyle(color: AppTheme.green, fontSize: 24),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          SizedBox(
+            height: 90,
+            child: TabBar(
+              tabs: [
+                Tab(text: "Oshpazlar",),
+                Tab(text: "Bezatuvchi",),
+                Tab(text: "Dekaratsiya",),
+                Tab(text: "Toyxona",),
+                Tab(text: "Foto & Video",),
+              ],
+            ),
+          ),
+           Expanded(
+             child: TabBarView(
+               children: [
+             ChefPage(),
+             ChefPage(),
+             ChefPage(),
+             ChefPage(),
+             ChefPage(),
+                          ],
+                        ),
+           ),
+          // SingleChildScrollView(
+          //   child: Row(
+          //     children: [
+          //       Container(
+          //         height: 60,
+          //         width: 180,
+          //         decoration: BoxDecoration(
+          //           color: Colors.white,
+          //             borderRadius: BorderRadius.circular(30),
+          //             border: Border.all(color: Colors.green, width: 1)),
+          //       child: Row(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: [
+          //           Icon(Icons.workspace_premium),
+          //           Text("Oshpazlar"),
+          //           Container(
+          //             height: 40,
+          //             width: 40,
+          //             decoration: BoxDecoration(
+          //               shape: BoxShape.circle,
+          //               color: Colors.white
+          //             ),
+          //             alignment: Alignment.center,
+          //             child: Text("0"),
+          //           ),
+          //         ],
+          //       ),
+          //       ),
+          //
+          //     ],
+          //   ),
+          // ),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //         child: _summary(
+          //             'JAMI XIZMATLAR', '${d.services.length}', AppTheme.green)),
+          //     const SizedBox(width: 10),
+          //     Expanded(
+          //       child: _summary('BAND QILINGAN',
+          //           '${store.servicesByStatus('Band qilingan')}', AppTheme.gold),
+          //     ),
+          //   ],
+          // ),
+          // const SizedBox(height: 10),
+          // _summary('UMUMIY NARX', FormatUtil.money(store.servicesTotalPrice()),
+          //     Colors.white),
+          // const SizedBox(height: 16),
+          // AppCard(
+          //   child: Column(
+          //     children: [
+          //       AppTextInput(controller: name, placeholder: 'Xizmat nomi'),
+          //       const SizedBox(height: 10),
+          //       AppSelectBox(
+          //         options: _categories,
+          //         selected: category,
+          //         onChanged: (v) => setState(() => category = v),
+          //       ),
+          //       const SizedBox(height: 10),
+          //       AppTextInput(controller: phone, placeholder: 'Telefon'),
+          //       const SizedBox(height: 10),
+          //       AppTextInput(
+          //         controller: price,
+          //         placeholder: 'Narx',
+          //         keyboardType: TextInputType.number,
+          //       ),
+          //       const SizedBox(height: 10),
+          //       AppButton(
+          //         text: "+ Qo'shish",
+          //         normalColor: AppTheme.green,
+          //         hoverColor: AppTheme.dark2,
+          //         textColor: Colors.white,
+          //         width: double.infinity,
+          //         onPressed: () {
+          //           store.addService(name.text, category, phone.text,
+          //               FormatUtil.parseMoney(price.text));
+          //           name.clear();
+          //           phone.clear();
+          //           price.clear();
+          //         },
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          // const SizedBox(height: 16),
+          // AppSelectBox(
+          //   options: _filters,
+          //   selected: filter,
+          //   onChanged: (v) => setState(() => filter = v),
+          // ),
+          // const SizedBox(height: 12),
+          // for (final s in filtered) ...[
+          //   _serviceCard(s),
+          //   const SizedBox(height: 10),
+          // ],
+          const SizedBox(height: 8),
         ],
-        const SizedBox(height: 8),
-      ],
+      ),
     );
   }
 
@@ -128,13 +212,20 @@ class _ServicesPageState extends ConsumerState<ServicesPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AvatarSquare(letter: s.category.isNotEmpty ? s.category[0] : '?', size: 56, fontSize: 22),
+          AvatarSquare(
+              letter: s.category.isNotEmpty ? s.category[0] : '?',
+              size: 56,
+              fontSize: 22),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(s.name, style: AppTheme.font(size: 18, color: AppTheme.text, weight: FontWeight.w700)),
+                Text(s.name,
+                    style: AppTheme.font(
+                        size: 18,
+                        color: AppTheme.text,
+                        weight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(
                   '${s.category}  |  ${s.phone.isEmpty ? '—' : s.phone}',
@@ -143,21 +234,26 @@ class _ServicesPageState extends ConsumerState<ServicesPage> {
                 const SizedBox(height: 8),
                 Text(
                   FormatUtil.money(s.price),
-                  style: AppTheme.font(size: 18, color: AppTheme.green, weight: FontWeight.w700),
+                  style: AppTheme.font(
+                      size: 18, color: AppTheme.green, weight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     AppButton(
                       text: s.status,
-                      normalColor: s.status == 'Band qilingan' ? AppTheme.okSoft : AppTheme.soft,
+                      normalColor: s.status == 'Band qilingan'
+                          ? AppTheme.okSoft
+                          : AppTheme.soft,
                       hoverColor: Colors.white,
                       textColor: AppTheme.text,
                       height: 36,
                       width: 140,
                       fontSize: 12,
                       onPressed: () {
-                        final next = s.status == 'Kutilmoqda' ? 'Band qilingan' : 'Kutilmoqda';
+                        final next = s.status == 'Kutilmoqda'
+                            ? 'Band qilingan'
+                            : 'Kutilmoqda';
                         store.setServiceStatus(s.id, next);
                       },
                     ),
